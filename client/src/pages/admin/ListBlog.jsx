@@ -3,6 +3,7 @@ import { blog_data } from '../../assets/assets';
 import BlogTableItem from '../../components/admin/BlogTableItem';
 import toast from 'react-hot-toast';
 import { useAppContext } from "../../context/AppContext"; 
+import axios from 'axios';
 
 const ListBlog = () => {
 
@@ -11,14 +12,20 @@ const ListBlog = () => {
 
   const fetchBlogs = async ()=> {
     try {
-      const {data} = await axios.get('api/admin/blogs')
+      console.log("run");
+      
+      const { data } = await axios.get("http://localhost:3000/api/blog/all");
+      console.log("Fetched blogs:", data);
+      
       if(data.success){
         setBlogs(data.blogs)
       }else{
-        toast.error(data.message)
+        toast.error("Failed to fetch blogs")
       }
     } catch (error) {
-      toast.error(error.message)
+      toast.error("Something went wrong")
+      console.log(error);
+      
     }
   }
 

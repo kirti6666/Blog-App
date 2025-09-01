@@ -6,6 +6,7 @@ import {toast} from "react-hot-toast"
 
 
 
+
 axios.defaults.baseURL = import.meta.env.VITE_BASE_URL;
 
 const AppContext = createContext();
@@ -20,12 +21,16 @@ export const AppProvider = ({children}) => {
 
     const fetchBlogs = async ()=> {
         try {
-            const{data} = await axios.get('/api/blog/all');
+            const {data} = await axios.get('/api/blog/all');
+            // console.log(data.blogs);
+            
             data.success ? setBlogs(data.blogs) : toast.error(data.message)
+            
         } catch (error) {
-            toast.error(data.message)
+            toast.error("Hello")
         }
     }
+    // console.log(blogs,"From conext");
 
     useEffect(()=> {
         fetchBlogs();
@@ -36,16 +41,20 @@ export const AppProvider = ({children}) => {
         }
     }, [])
     
-    const value ={
-        axios, navigate, token, setToken, blogs, setBlogs, input, setInput
-    }
+    
+    axios.defaults.baseURL = import.meta.env.VITE_BASE_URL;
+
+    const value = {
+    axios: axios, // ✅ explicit
+    navigate, token, setToken, blogs, setBlogs, input, setInput
+    };
+
     
     return (
-        
-        <AppContext.Provider value={value}>
-            {children}
-        </AppContext.Provider>
-    )
+    <AppContext.Provider value={value}>
+        {children}
+    </AppContext.Provider>
+    );
 }
 
 export const useAppContext = ()=> {

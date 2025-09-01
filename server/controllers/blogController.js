@@ -3,6 +3,7 @@ import imagekit from '../configs/imagekit.js';
 import { format } from 'path';
 import Blog from '../models/Blog.js';
 import Comment from '../models/Comment.js';
+import main from '../configs/GEMINI.js';   
 
 
 
@@ -52,7 +53,7 @@ export const addBlog = async (req, res)=> {
 export const getAllBlogs = async (req, res)=> {
     try {
         const blogs = await Blog.find({ isPublished: true });
-        console.log(blogs);
+        // console.log(blogs);
         
         res.json({
             success: true,
@@ -60,10 +61,12 @@ export const getAllBlogs = async (req, res)=> {
         });
 
     } catch (error) {
+        console.log(error.message);
         res.status(500).json({
             success: false,
-            message: error.message
+            message: error.message, 
         });
+        
     }
 };
 
@@ -83,10 +86,11 @@ export const getBlogById = async (req, res) => {
 
 export const deleteBlogById = async (req, res) => {
     try {
-        const { id } = req.body;
+        const { id } = req.params;
+        
         await Blog.findByIdAndDelete(id);
 
-        //Delete all comments associated with the blog
+        //Delete all comments associated with the blog           mtlb yha glti h
         await Comment.deleteMany({blog: id});
 
         res.json({success: true, message: "Blog deleted successfully"})
@@ -128,6 +132,16 @@ export const getBlogComments = async(req, res) => {
         const {blogId} = req.body;
         const comments = await Comment.find({blog: blogId, isApproved: true}).sort({createdAt: -1});
         res.json({success: true, comments})
+    } catch (error) {
+        res.json({success: false, message: error.message})
+    }
+}
+
+export const generateContent = async(req, res) => {
+    try {
+        const {prompt} = req.body;
+        const content =  await main(prompt + 'Generate a blog content for this topic in simple text format')
+        res.json({success: true, content})
     } catch (error) {
         res.json({success: false, message: error.message})
     }
